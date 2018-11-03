@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 
 /**
  * Created by sharma on 10/14/18.
@@ -11,39 +11,63 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp
 public class servo_test extends LinearOpMode {
     //boom-ting
-    CRServo spinnerR;
-    CRServo spinnerL;
+
     DcMotor motorFrontRight;
     DcMotor motorFrontLeft;
     DcMotor motorBackRight;
     DcMotor motorBackLeft;
-    DcMotor winch;
+    DcMotor leftLift;
+    DcMotor rightLift;
+
     //hello boom yo ting goes skrrra
     public void runOpMode() throws InterruptedException {
-        spinnerL = hardwareMap.crservo.get("spinnerL");
-        spinnerR = hardwareMap.crservo.get("spinnerR");
         motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
         motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
         motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
         motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
-        winch = hardwareMap.dcMotor.get("winch");
+        leftLift = hardwareMap.dcMotor.get("leftLift");
+        rightLift = hardwareMap.dcMotor.get("rightLift");
+
+        motorBackLeft.setDirection(Direction.REVERSE);
+        motorFrontLeft.setDirection(Direction.REVERSE);
 
 
         telemetry.addData("System: ", "waiting for initalization");
         telemetry.update();
         waitForStart();
-        winch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         while (opModeIsActive()) {
             telemetry.addData("System: ", "initialized");
             telemetry.update();
 
-            spinnerL.setPower((gamepad1.left_trigger - gamepad2.right_trigger));
-            spinnerR.setPower(-(gamepad1.left_trigger - gamepad2.right_trigger));
+            if(gamepad1.dpad_up){
+                rightLift.setPower(0.5);
+                leftLift.setPower(-0.5);
+            }else if(gamepad1.dpad_down){
+                rightLift.setPower(-0.5);
+                leftLift.setPower(0.5);
+            }
+            else{
+                rightLift.setPower(0);
+                leftLift.setPower(0);
+            }
+//            if(gamepad1.dpad_right){
+//
+//                leftLift.setPower(-0.5);
+//            }else if(gamepad1.dpad_left){
+//
+//                leftLift.setPower(0.5);
+//            }
+//            else{
+//
+//                leftLift.setPower(0);
+//            }
 
-            motorFrontRight.setPower(gamepad1.left_stick_x);
-            motorFrontLeft.setPower(gamepad1.right_stick_y);
-            motorBackRight.setPower(gamepad1.left_stick_y);
-            motorBackLeft.setPower(gamepad1.right_stick_y);
+            motorFrontRight.setPower(gamepad1.right_stick_y);
+            motorFrontLeft.setPower(gamepad1.left_stick_y);
+            motorBackRight.setPower(gamepad1.right_stick_y);
+            motorBackLeft.setPower(gamepad1.left_stick_y);
+
         }
     }
 }
