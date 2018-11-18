@@ -22,17 +22,17 @@ public class TurnPID extends LinearOpMode {
 
     public ElapsedTime time = new ElapsedTime();
     private BNO055IMU imu;
-    private DcMotor Motor1;
-    private DcMotor Motor2;
-    private DcMotor Motor3;
-    private DcMotor Motor4;
+    private DcMotor motorFrontRight;
+    private DcMotor motorFrontLeft;
+    private DcMotor motorBackRight;
+    private DcMotor motorBackLeft;
     double initval = 0;
 
 
     public void turn(double target, double speed){
-        double kp = 0.14;
+        double kp = 0.27;
         double ki = 0;
-        double kd = 0.005;
+        double kd = 0;
         double dt = 0;
         double sum = 0;
         double temp = 0;
@@ -41,7 +41,7 @@ public class TurnPID extends LinearOpMode {
         double power;
         Orientation angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         initval = angles.firstAngle;
-        double error = angles.firstAngle - initval;
+        double error = target - angles.firstAngle + initval;
         time.reset();
         while(Math.abs(angles.firstAngle-initval)!=Math.abs(target) && opModeIsActive()){
             dt = time.time() - temp;
@@ -49,17 +49,17 @@ public class TurnPID extends LinearOpMode {
             telemetry.addData("boom",roc);
             sum+= error*dt;
             power = kp*error + ki*sum + kd*roc;
-            Motor1.setPower(speed*power);
-            Motor3.setPower(speed*power);
-            Motor2.setPower(-speed*power);
-            Motor4.setPower(-speed*power);
+            motorFrontRight.setPower(speed*power);
+            motorBackRight.setPower(speed*power);
+            motorFrontLeft.setPower(-speed*power);
+            motorBackLeft.setPower(-speed*power);
 
             temp = time.time();
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.addData("error", error);
             telemetry.update();
             err = error;
-            error = target-angles.firstAngle;
+            error = target-angles.firstAngle+initval;
         }
 
 
@@ -69,16 +69,16 @@ public class TurnPID extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
 
-        Motor1 = hardwareMap.dcMotor.get("Motor1");
-        Motor2 = hardwareMap.dcMotor.get("Motor2");
-        Motor3 = hardwareMap.dcMotor.get("Motor3");
-        Motor4 = hardwareMap.dcMotor.get("Motor4");
-        Motor2.setDirection(Direction.REVERSE);
-        Motor4.setDirection(Direction.REVERSE);
-        Motor1.setMode(RunMode.RUN_USING_ENCODER);
-        Motor2.setMode(RunMode.RUN_USING_ENCODER);
-        Motor3.setMode(RunMode.RUN_USING_ENCODER);
-        Motor4.setMode(RunMode.RUN_USING_ENCODER);
+        motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
+        motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
+        motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
+        motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
+        motorFrontLeft.setDirection(Direction.REVERSE);
+        motorBackLeft.setDirection(Direction.REVERSE);
+        motorFrontRight.setMode(RunMode.RUN_USING_ENCODER);
+        motorFrontLeft.setMode(RunMode.RUN_USING_ENCODER);
+        motorBackRight.setMode(RunMode.RUN_USING_ENCODER);
+        motorBackLeft.setMode(RunMode.RUN_USING_ENCODER);
 
         BNO055IMU.Parameters gyroParam = new BNO055IMU.Parameters();
         gyroParam.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -95,7 +95,7 @@ public class TurnPID extends LinearOpMode {
         imu.initialize(gyroParam);
 
         waitForStart();
-        turn(90,0.3);
+        turn(90,-0.2);
 
     }
 }

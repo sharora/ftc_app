@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -11,7 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Created by sharma on 10/14/18.
  */
 @TeleOp
-public class servo_test extends LinearOpMode {
+public class SlideReset extends LinearOpMode {
     //boom-ting
 
     DcMotor motorFrontRight;
@@ -26,7 +28,7 @@ public class servo_test extends LinearOpMode {
 
     CRServo spinnerR;
     CRServo spinnerL;
-    Servo dumper;
+    Servo hangLock;
 
     //hello boom yo ting goes skrrra
     public void runOpMode() throws InterruptedException {
@@ -43,7 +45,7 @@ public class servo_test extends LinearOpMode {
         motorBackLeft.setDirection(Direction.REVERSE);
         motorFrontLeft.setDirection(Direction.REVERSE);
 
-        dumper = hardwareMap.servo.get("dumper");
+        hangLock = hardwareMap.servo.get("hangLock");
 
         spinnerR = hardwareMap.crservo.get("spinnerR");
         spinnerL = hardwareMap.crservo.get("spinnerL");
@@ -57,51 +59,35 @@ public class servo_test extends LinearOpMode {
             telemetry.addData("System: ", "initialized");
             telemetry.update();
 
-            if(gamepad1.right_bumper){
-                spinnerL.setPower(1);
-                spinnerR.setPower(-1);
-            }
-            else if(gamepad1.left_bumper){
-                spinnerL.setPower(-1);
-                spinnerR.setPower(1);
-            }
-            else{
-                spinnerL.setPower(0);
-                spinnerR.setPower(0);
-            }
+
 
             if(gamepad1.dpad_up){
                 rightLift.setPower(1);
-                leftLift.setPower(-0.7);
+
             }else if(gamepad1.dpad_down){
                 rightLift.setPower(-1);
-                leftLift.setPower(0.3);
+
             }
             else{
                 rightLift.setPower(0);
-                leftLift.setPower(0);
-            }
-            if(gamepad1.a){
-                dumper.setPosition(-1);
-            }else{
-                dumper.setPosition(0.85);
-            }
-            intakeSlides.setPower(gamepad2.left_stick_y);
 
-            if(gamepad2.right_stick_y<0){
-                intakeDump.setPower(0.8*gamepad2.right_stick_y);
+            }
+
+            if(gamepad1.dpad_right){
+                leftLift.setPower(1);
+
+            }else if(gamepad1.dpad_left){
+                leftLift.setPower(-1);
+
             }
             else{
-                intakeDump.setPower(0.2*gamepad2.right_stick_y);
+                leftLift.setPower(0);
+
             }
 
 
-
-            motorFrontRight.setPower(gamepad1.right_stick_y);
-            motorFrontLeft.setPower(gamepad1.left_stick_y);
-            motorBackRight.setPower(gamepad1.right_stick_y);
-            motorBackLeft.setPower(gamepad1.left_stick_y);
 
         }
     }
 }
+
