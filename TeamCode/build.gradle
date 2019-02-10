@@ -13,3 +13,8 @@
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
+
+dependencies {
+    //RevExtensionsLibrary(Faster Bus Speeds with Bulk Read Write)
+    compile 'org.openftc:rev-extensions-2:1.1'
+}

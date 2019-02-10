@@ -29,7 +29,7 @@ import org.firstinspires.ftc.teamcode.Robot.RobotConstants;
 import java.util.List;
 
 @Autonomous
-public class CraterFacingAuto extends LinearOpMode {
+public class DepotFacingAuto extends LinearOpMode {
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -100,7 +100,6 @@ public class CraterFacingAuto extends LinearOpMode {
         intakeSlides = hardwareMap.dcMotor.get("intakeSlides");
 
 
-
         motorBackLeft.setDirection(Direction.REVERSE);
         motorFrontLeft.setDirection(Direction.REVERSE);
 
@@ -151,8 +150,8 @@ public class CraterFacingAuto extends LinearOpMode {
 
 //        code that executes in match
 
-        intakeSlides.setPower(-0.3);
-        sleep(200);
+        intakeSlides.setPower(-0.4);
+        sleep(750);
         intakeSlides.setPower(0);
         moveLift(15200, 1);
         driveForward(-50,0.4);
@@ -174,11 +173,11 @@ public class CraterFacingAuto extends LinearOpMode {
             if(time.milliseconds()>500){
                 //gold is far left(robot perspective)
                 telemetry.addData("Gold is at Position", 1);
-                driveForward(-300,0.7);
-                encoderturn(50, 0.7);
-                driveForward(-1800,0.7);
-                driveForward(1800,0.7);
-                encoderturn(-50, 0.7);
+                driveForward(-300,0.5);
+                encoderturn(50, 0.6);
+                driveForward(-1800,0.5);
+                driveForward(1800,0.5);
+                encoderturn(-50, 0.6);
                 driveForward(300,0.5);
                 break;
             }
@@ -194,10 +193,15 @@ public class CraterFacingAuto extends LinearOpMode {
                             //gold is far left(robot perspective)
                             telemetry.addData("Gold is at Position", 1);
                             driveForward(-300,0.7);
+                            sleep(100);
                             encoderturn(40, 0.7);
+                            sleep(100);
                             driveForward(-1800,0.7);
+                            sleep(200);
                             driveForward(1800,0.7);
+                            sleep(100);
                             encoderturn(-40, 0.7);
+                            sleep(100);
                             driveForward(300,0.7);
                             break;
 
@@ -214,8 +218,11 @@ public class CraterFacingAuto extends LinearOpMode {
                             //gold is in middle
                             telemetry.addData("Gold is at Position", 2);
                             encoderturn(-105, 0.7);
+                            sleep(100);
                             driveForward(1500,0.7);
+                            sleep(200);
                             driveForward(-1500,0.7);
+                            sleep(100);
                             encoderturn(105, 0.7);
                             break;
                         }
@@ -223,8 +230,11 @@ public class CraterFacingAuto extends LinearOpMode {
                             //gold is at far right
                             telemetry.addData("Gold is at Position", 3);
                             encoderturn(-50, 0.7);
+                            sleep(100);
                             driveForward(1500,0.7);
+                            sleep(200);
                             driveForward(-1500,0.7);
+                            sleep(100);
                             encoderturn(50, 0.7);
                             break;
                         }
@@ -237,8 +247,11 @@ public class CraterFacingAuto extends LinearOpMode {
                             if(updatedRecognitions.get(0).getLeft()>550){
                                 //gold is far right
                                 encoderturn(-50, 0.7);
+                                sleep(100);
                                 driveForward(1500,0.7);
+                                sleep(200);
                                 driveForward(-1500,0.7);
+                                sleep(100);
                                 encoderturn(50, 0.7);
                                 break;
 
@@ -246,8 +259,11 @@ public class CraterFacingAuto extends LinearOpMode {
                                 //gold is center
                                 telemetry.addData("Gold is at Position", 2);
                                 encoderturn(-105, 0.7);
+                                sleep(100);
                                 driveForward(1500,0.7);
+                                sleep(200);
                                 driveForward(-1500,0.7);
+                                sleep(100);
                                 encoderturn(105, 0.7);
                                 break;
                             }
@@ -267,29 +283,29 @@ public class CraterFacingAuto extends LinearOpMode {
             }
         }
         telemetry.update();
-        while(sensorRange.getDistance(DistanceUnit.INCH)>7 && opModeIsActive()){
-            motorBackLeft.setPower(0.7);
-            motorBackRight.setPower(0.7);
-            motorFrontLeft.setPower(0.7);
-            motorFrontRight.setPower(0.7);
+        while(sensorRange.getDistance(DistanceUnit.INCH)>11){
+            motorBackLeft.setPower(1);
+            motorBackRight.setPower(1);
+            motorFrontLeft.setPower(1);
+            motorFrontRight.setPower(1);
         }
         motorBackLeft.setPower(0);
         motorBackRight.setPower(0);
         motorFrontLeft.setPower(0);
         motorFrontRight.setPower(0);
-//        absoluteturn(-50,0.8);
-        badturn(-58,0.32);
+//        absoluteturn(-,0.8);
+        badturn(-140,0.33);
 //        badturn(-50, -0.35);
 
-        driveForward(-3500,1);
-        encoderturn(-45,0.8);
+        driveForward(-4000,1);
+        encoderturn(-20,0.8);
         teamMarker.setPosition(1);
         sleep(200);
-        encoderturn(45,0.8);
+        encoderturn(20,0.8);
         sleep(300);
         driveForward(5300,1);
         intakeSlides.setPower(-0.4);
-        sleep(200);
+        sleep(700);
         intakeSlides.setPower(0);
 
         if (tfod != null) {

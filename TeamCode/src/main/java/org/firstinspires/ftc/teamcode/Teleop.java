@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Robot.RobotConstants;
+
 /**
  * Created by sharma on 10/14/18.
  *
@@ -39,10 +41,6 @@ public class Teleop extends LinearOpMode {
     Servo dumper2;
     public ElapsedTime time = new ElapsedTime();
 
-
-
-
-    //hello boom yo ting goes skrrra
     public void runOpMode() throws InterruptedException {
         motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
         motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
@@ -59,7 +57,9 @@ public class Teleop extends LinearOpMode {
 
         intakeDump.setMode(RunMode.RUN_TO_POSITION);
         intakeSlides = hardwareMap.dcMotor.get("intakeSlides");
-        intakeSlides.setDirection(Direction.REVERSE);
+
+        intakeSlides.setMode(RunMode.RUN_TO_POSITION);
+
 
         motorBackLeft.setDirection(Direction.REVERSE);
         motorFrontLeft.setDirection(Direction.REVERSE);
@@ -91,6 +91,7 @@ public class Teleop extends LinearOpMode {
             else{
                 spinner.setPower(0);
             }
+
             if(gamepad2.dpad_up){
                 hangingMotor.setPower(1);
             }
@@ -102,76 +103,102 @@ public class Teleop extends LinearOpMode {
             }
 
 
-            intakeSlides.setPower(gamepad2.right_stick_y);
-            if(dumpPos == 0 && intakeContinue){
-                if(Math.abs(intakeDump.getCurrentPosition() + 600) < 3){
-                    dumpPos = 1;
-                    intakeDump.setPower(0);
-                    intakeContinue = false;
-
-                }
-                else if(Math.abs(intakeDump.getCurrentPosition() + 1600) < 20){
-                    dumpPos = 2;
-                    intakeDump.setPower(0);
-                    intakeContinue = false;
-
-                }
-                else if(gamepad2.right_bumper){
-                    intakeDump.setPower(0.4);
-                    intakeDump.setTargetPosition(-600);
-                }
 
 
-            }else if(dumpPos == 1 && intakeContinue){
-                if(Math.abs(intakeDump.getCurrentPosition() + 1600) < 20){
-                    dumpPos = 2;
-                    intakeDump.setPower(0);
-                    intakeContinue = false;
-
-                }
-                else if(Math.abs(intakeDump.getCurrentPosition()) < 6){
-                    dumpPos = 0;
-                    intakeDump.setPower(0);
-                    intakeContinue = false;
-
-                }
-                else if(gamepad2.right_bumper){
-                    intakeDump.setPower(0.4);
-                    intakeDump.setTargetPosition(-1600);
-                }
-                else if(gamepad2.left_bumper){
-                    intakeDump.setPower(0.65);
-                    intakeDump.setTargetPosition(0);
-                }
-
+            //sends the mechanism to bottom position when right bumper is pressed
+            if(gamepad2.right_trigger>0){
+                intakeDump.setPower(0.4);
+                intakeDump.setTargetPosition(-1500);
             }
-            else if(dumpPos == 2){
-                if(Math.abs(intakeDump.getCurrentPosition() + 600) < 3){
-                    dumpPos = 1;
-                    intakeDump.setPower(0);
-                    intakeContinue = false;
-
-                }
-                else if(gamepad2.left_bumper){
-                    intakeDump.setPower(0.65);
-                    intakeDump.setTargetPosition(-600);
-                }
-
-
+            //sends the mechanism to the top position when left bumper is pressed
+            else if(gamepad2.left_trigger>0){
+                intakeDump.setPower(0.6);
+                intakeDump.setTargetPosition(0);
             }
+            //if no buttons are pressed than the mechanism is sent to neutral position
             else{
-                intakeContinue = true;
+                intakeDump.setPower(0.4);
+                intakeDump.setTargetPosition(-650);
             }
 
-            if(gamepad1.b){
 
-                dumper1.setPosition(-0.76);
-                dumper2.setPosition(0.76);
-            }
-            else{
-                dumper1.setPosition(1);
-                dumper2.setPosition(-1);
-            }
+//            if(dumpPos == 0 && intakeContinue){
+//                if(Math.abs(intakeDump.getCurrentPosition() + 600) < 3){
+//                    dumpPos = 1;
+//                    intakeDump.setPower(0);
+//                    intakeContinue = false;
+//
+//                }
+//                else if(Math.abs(intakeDump.getCurrentPosition() + 1600) < 20){
+//                    dumpPos = 2;
+//                    intakeDump.setPower(0);
+//                    intakeContinue = false;
+//
+//                }
+//                else if(gamepad2.right_bumper){
+//                    intakeDump.setPower(0.4);
+//                    intakeDump.setTargetPosition(-600);
+//                }
+//
+//
+//            }else if(dumpPos == 1 && intakeContinue){
+//                if(Math.abs(intakeDump.getCurrentPosition() + 1600) < 20){
+//                    dumpPos = 2;
+//                    intakeDump.setPower(0);
+//                    intakeContinue = false;
+//
+//                }
+//                else if(Math.abs(intakeDump.getCurrentPosition()) < 6){
+//                    dumpPos = 0;
+//                    intakeDump.setPower(0);
+//                    intakeContinue = false;
+//
+//                }
+//                else if(gamepad2.right_bumper){
+//                    intakeDump.setPower(0.4);
+//                    intakeDump.setTargetPosition(-1600);
+//                }
+//                else if(gamepad2.left_bumper){
+//                    intakeDump.setPower(0.65);
+//                    intakeDump.setTargetPosition(0);
+//                }
+//
+//            }
+//            else if(dumpPos == 2){
+//                if(Math.abs(intakeDump.getCurrentPosition() + 600) < 3){
+//                    dumpPos = 1;
+//                    intakeDump.setPower(0);
+//                    intakeContinue = false;
+//
+//                }
+//                else if(gamepad2.left_bumper){
+//                    intakeDump.setPower(0.65);
+//                    intakeDump.setTargetPosition(-600);
+//                }
+//
+//
+//            }
+//            else{
+//                intakeContinue = true;
+//            }
+            //Deposit minerals if the button B is pressed
+//            if(gamepad1.b){
+//                //if the dummper is in the second stage of rotation lower the speed
+//                if(dumper2.getPosition()>0.4 && dumper2.getPosition()<0.84){
+//                    dumper2.setPosition(dumper2.getPosition()+0.013);
+//                    dumper1.setPosition(dumper1.getPosition()-0.013);
+//                }
+//                //if the dumper is in the first stage of rotation set a higher speed
+//                else if(dumper2.getPosition()<0.84){
+//                    dumper2.setPosition(dumper2.getPosition()+0.04);
+//                    dumper1.setPosition(dumper1.getPosition()-0.040);
+//                }
+//            }
+//            //otherwise when the button is not being pressed, set the button back to home position
+//            else{
+//                dumper1.setPosition(1);
+//                dumper2.setPosition(-1);
+//            }
 
 //            if(vertPos == 1 && !mgLimVert.getState()){
 //                if(gamepad2.left_stick_y < 0){
@@ -226,11 +253,21 @@ public class Teleop extends LinearOpMode {
             if(gamepad2.x){
                 verticalLift.setTargetPosition(-1950);
                 verticalLift.setPower(1);
+                if(verticalLift.getCurrentPosition()<-800){
+                    dumper2.setPosition(0.78);
+                    dumper1.setPosition(-0.78);
+                }else{
+                    dumper2.setPosition(-1);
+                    dumper1.setPosition(1);
+
+                }
+
 
             }
             else if(gamepad2.y){
                 verticalLift.setTargetPosition(-1620);
                 verticalLift.setPower(0.6);
+
 
             }
             else if(!mgLimVert.getState() && verticalLift.isBusy()){
@@ -240,6 +277,27 @@ public class Teleop extends LinearOpMode {
             }
             else{
                 verticalLift.setPower(0);
+                dumper2.setPosition(-1);
+                dumper1.setPosition(1);
+
+            }
+
+            if(gamepad2.right_stick_y!=0){
+                intakeSlides.setMode(RunMode.RUN_USING_ENCODER);
+                intakeSlides.setPower(gamepad2.right_stick_y);
+            }
+            else if(gamepad2.right_bumper){
+                intakeSlides.setMode(RunMode.RUN_TO_POSITION);
+                intakeSlides.setPower(1);
+                intakeSlides.setTargetPosition(RobotConstants.horizontalslidemax);
+            }
+            else if(gamepad2.left_bumper){
+                intakeSlides.setMode(RunMode.RUN_TO_POSITION);
+                intakeSlides.setPower(-1);
+                intakeSlides.setTargetPosition(0);
+            }
+            else if(!intakeSlides.isBusy()){
+                intakeSlides.setPower(0);
             }
 
 
@@ -253,10 +311,10 @@ public class Teleop extends LinearOpMode {
             telemetry.update();
 
 
-            motorFrontRight.setPower(0.9*gamepad1.right_stick_y);
-            motorFrontLeft.setPower(0.9*gamepad1.left_stick_y);
-            motorBackRight.setPower(0.9*gamepad1.right_stick_y);
-            motorBackLeft.setPower(0.9*gamepad1.left_stick_y);
+            motorFrontRight.setPower(0.83*gamepad1.right_stick_y);
+            motorFrontLeft.setPower(0.83*gamepad1.left_stick_y);
+            motorBackRight.setPower(0.83*gamepad1.right_stick_y);
+            motorBackLeft.setPower(0.83*gamepad1.left_stick_y);
 
 
         }

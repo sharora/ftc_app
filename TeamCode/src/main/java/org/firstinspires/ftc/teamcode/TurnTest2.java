@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.FunctionTesting.RobotConstants;
+import org.firstinspires.ftc.teamcode.Robot.RobotConstants;
 
 
 @Autonomous
@@ -67,6 +67,9 @@ public class TurnTest2 extends LinearOpMode {
         //code
 
         turn(90,1);
+//        badturn(87,1);
+//        badturn(90.5,-0.35);
+
 
     }
     public void badturn(double angle, double speed){
@@ -75,9 +78,18 @@ public class TurnTest2 extends LinearOpMode {
         motorBackLeft.setPower(speed);
         motorFrontLeft.setPower(speed);
         Orientation angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        while(angle - angles.firstAngle > 0){
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        if(speed>0){
+            while(angle - angles.firstAngle > 0){
+                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            }
         }
+        else{
+            while(angle - angles.firstAngle < 0){
+                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            }
+
+        }
+
         motorFrontRight.setPower(0);
         motorBackRight.setPower(0);
         motorBackLeft.setPower(0);
@@ -85,6 +97,11 @@ public class TurnTest2 extends LinearOpMode {
 
     }
     public void turn(double angle, double speed){
+
+        motorFrontRight.setMode(RunMode.RUN_USING_ENCODER);
+        motorFrontLeft.setMode(RunMode.RUN_USING_ENCODER);
+        motorBackLeft.setMode(RunMode.RUN_USING_ENCODER);
+        motorBackRight.setMode(RunMode.RUN_USING_ENCODER);
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -132,14 +149,29 @@ public class TurnTest2 extends LinearOpMode {
             sum += dt*error;
 
 
-            //setting the motor power based on the constant of proportionality
-            power = kp*error + ki*sum  + kd*roc;
+            power = (kp*error + ki*sum  + kd*roc)*speed;
 
-            //setting the motor powers
-            motorFrontRight.setPower(-speed*power);
-            motorBackRight.setPower(-speed*power);
-            motorBackLeft.setPower(speed*power);
-            motorFrontLeft.setPower(speed*power);
+
+            if(power < 0.08 && power > 0){
+                motorFrontRight.setPower(-0.08);
+                motorBackRight.setPower(-0.08);
+                motorBackLeft.setPower(0.08);
+                motorFrontLeft.setPower(0.08);
+            }
+            else if(power<0.08 && power<0){
+                motorFrontRight.setPower(0.08);
+                motorBackRight.setPower(0.08);
+                motorBackLeft.setPower(-0.08);
+                motorFrontLeft.setPower(-0.08);
+            }
+            else{
+                //setting the motor powers
+                motorFrontRight.setPower(-power);
+                motorBackRight.setPower(-power);
+                motorBackLeft.setPower(power);
+                motorFrontLeft.setPower(power);
+            }
+
 
             //Difference between the target and current position relative to the initial value
             err = error;

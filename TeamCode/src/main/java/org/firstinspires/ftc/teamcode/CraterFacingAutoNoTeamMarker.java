@@ -18,7 +18,6 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
@@ -29,7 +28,7 @@ import org.firstinspires.ftc.teamcode.Robot.RobotConstants;
 import java.util.List;
 
 @Autonomous
-public class CraterFacingAuto extends LinearOpMode {
+public class CraterFacingAutoNoTeamMarker extends LinearOpMode {
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -100,7 +99,6 @@ public class CraterFacingAuto extends LinearOpMode {
         intakeSlides = hardwareMap.dcMotor.get("intakeSlides");
 
 
-
         motorBackLeft.setDirection(Direction.REVERSE);
         motorFrontLeft.setDirection(Direction.REVERSE);
 
@@ -151,8 +149,8 @@ public class CraterFacingAuto extends LinearOpMode {
 
 //        code that executes in match
 
-        intakeSlides.setPower(-0.3);
-        sleep(200);
+        intakeSlides.setPower(-0.4);
+        sleep(750);
         intakeSlides.setPower(0);
         moveLift(15200, 1);
         driveForward(-50,0.4);
@@ -171,15 +169,11 @@ public class CraterFacingAuto extends LinearOpMode {
         time.reset();
 
         while (opModeIsActive()) {
-            if(time.milliseconds()>500){
-                //gold is far left(robot perspective)
-                telemetry.addData("Gold is at Position", 1);
-                driveForward(-300,0.7);
-                encoderturn(50, 0.7);
-                driveForward(-1800,0.7);
-                driveForward(1800,0.7);
-                encoderturn(-50, 0.7);
-                driveForward(300,0.5);
+            if(time.milliseconds()>2000){
+                telemetry.addData("Gold is at Position", null);
+                encoderturn(-105, 0.7);
+                sleep(100);
+                driveForward(1500,0.7);
                 break;
             }
             else if (tfod != null) {
@@ -194,11 +188,11 @@ public class CraterFacingAuto extends LinearOpMode {
                             //gold is far left(robot perspective)
                             telemetry.addData("Gold is at Position", 1);
                             driveForward(-300,0.7);
-                            encoderturn(40, 0.7);
-                            driveForward(-1800,0.7);
+                            sleep(100);
+                            encoderturn(-130, 0.7);
+                            sleep(100);
                             driveForward(1800,0.7);
-                            encoderturn(-40, 0.7);
-                            driveForward(300,0.7);
+                            encoderturn(50,0.7);
                             break;
 
                         }
@@ -214,82 +208,60 @@ public class CraterFacingAuto extends LinearOpMode {
                             //gold is in middle
                             telemetry.addData("Gold is at Position", 2);
                             encoderturn(-105, 0.7);
+                            sleep(100);
                             driveForward(1500,0.7);
-                            driveForward(-1500,0.7);
-                            encoderturn(105, 0.7);
                             break;
                         }
                         else{
                             //gold is at far right
                             telemetry.addData("Gold is at Position", 3);
                             encoderturn(-50, 0.7);
+                            sleep(100);
                             driveForward(1500,0.7);
-                            driveForward(-1500,0.7);
-                            encoderturn(50, 0.7);
+                            encoderturn(-50,0.7);
                             break;
                         }
 
 
 
                     }
-                    else if(updatedRecognitions.size() == 1){
-                        if(updatedRecognitions.get(0).getLabel().equals(LABEL_GOLD_MINERAL)){
-                            if(updatedRecognitions.get(0).getLeft()>550){
-                                //gold is far right
-                                encoderturn(-50, 0.7);
-                                driveForward(1500,0.7);
-                                driveForward(-1500,0.7);
-                                encoderturn(50, 0.7);
-                                break;
 
-                            }else{
-                                //gold is center
-                                telemetry.addData("Gold is at Position", 2);
-                                encoderturn(-105, 0.7);
-                                driveForward(1500,0.7);
-                                driveForward(-1500,0.7);
-                                encoderturn(105, 0.7);
-                                break;
-                            }
+                }
+                else if(updatedRecognitions.size() == 1){
+                    if(updatedRecognitions.get(0).getLabel().equals(LABEL_GOLD_MINERAL)){
+                        if(updatedRecognitions.get(0).getLeft()>550){
+                            //gold is far right
+                            telemetry.addData("Gold is at Position", 3);
+                            encoderturn(-50, 0.7);
+                            sleep(100);
+                            driveForward(1500,0.7);
+                            encoderturn(-50,0.7);
+                            break;
 
-                        }else if(updatedRecognitions.get(0).getLabel().equals(LABEL_GOLD_MINERAL)){
-                            if(updatedRecognitions.get(0).getLeft()>550){
-                                driveForward(-100,0.7);
-                            }else{
-                                driveForward(100,0.7);
-                            }
-
-
+                        }else{
+                            //gold is center
+                            telemetry.addData("Gold is at Position", 2);
+                            encoderturn(-105, 0.7);
+                            sleep(100);
+                            driveForward(1500,0.7);
+                            break;
                         }
-                    }
 
+                    }else if(updatedRecognitions.get(0).getLabel().equals(LABEL_GOLD_MINERAL)){
+                        if(updatedRecognitions.get(0).getLeft()>550){
+                            driveForward(-100,0.7);
+                        }else{
+                            driveForward(100,0.7);
+                        }
+
+
+                    }
                 }
             }
         }
         telemetry.update();
-        while(sensorRange.getDistance(DistanceUnit.INCH)>7 && opModeIsActive()){
-            motorBackLeft.setPower(0.7);
-            motorBackRight.setPower(0.7);
-            motorFrontLeft.setPower(0.7);
-            motorFrontRight.setPower(0.7);
-        }
-        motorBackLeft.setPower(0);
-        motorBackRight.setPower(0);
-        motorFrontLeft.setPower(0);
-        motorFrontRight.setPower(0);
-//        absoluteturn(-50,0.8);
-        badturn(-58,0.32);
-//        badturn(-50, -0.35);
-
-        driveForward(-3500,1);
-        encoderturn(-45,0.8);
-        teamMarker.setPosition(1);
-        sleep(200);
-        encoderturn(45,0.8);
-        sleep(300);
-        driveForward(5300,1);
         intakeSlides.setPower(-0.4);
-        sleep(200);
+        sleep(700);
         intakeSlides.setPower(0);
 
         if (tfod != null) {
@@ -483,17 +455,12 @@ public class CraterFacingAuto extends LinearOpMode {
     }
     public void absoluteturn(double angle, double speed){
 
-        motorFrontRight.setMode(RunMode.RUN_USING_ENCODER);
-        motorFrontLeft.setMode(RunMode.RUN_USING_ENCODER);
-        motorBackLeft.setMode(RunMode.RUN_USING_ENCODER);
-        motorBackRight.setMode(RunMode.RUN_USING_ENCODER);
-
 
         //constant of proportionality
         double kp = RobotConstants.kp;
         double ki = RobotConstants.ki;
         double kd = RobotConstants.kd;
-        double threshold = 0.126;
+        double threshold = 0.1;
         //initializing the power variable
         double power;
         double dt;
@@ -501,7 +468,6 @@ public class CraterFacingAuto extends LinearOpMode {
         double time2 = 0;
         double roc;
         double sum = 0;
-
 
 
 
@@ -521,8 +487,7 @@ public class CraterFacingAuto extends LinearOpMode {
         time.reset();
 
         //run the loop while the difference between the current position and the target is not zero
-        //prev bool was Math.abs(error)>threshold
-        while(Math.abs(error)>threshold && opModeIsActive()&& time.milliseconds()<4000){
+        while(Math.abs(error)>threshold&& opModeIsActive()){
 
             time2 = time.time();
             dt = time2 - time1;
@@ -535,32 +500,13 @@ public class CraterFacingAuto extends LinearOpMode {
 
 
             //setting the motor power based on the constant of proportionality
-            power = (kp*error + ki*sum  + kd*roc)*speed;
+            power = kp*error + ki*sum  + kd*roc;
 
-
-//            if(power < 0.15 && power > 0){
-//                motorFrontRight.setPower(-0.15);
-//                motorBackRight.setPower(-0.15);
-//                motorBackLeft.setPower(0.15);
-//                motorFrontLeft.setPower(0.15);
-//            }
-//            else if(power<0.15 && power<0){
-//                motorFrontRight.setPower(0.15);
-//                motorBackRight.setPower(0.15);
-//                motorBackLeft.setPower(-0.15);
-//                motorFrontLeft.setPower(-0.15);
-//            }
-//            else{
-//                //setting the motor powers
-//                motorFrontRight.setPower(-power);
-//                motorBackRight.setPower(-power);
-//                motorBackLeft.setPower(power);
-//                motorFrontLeft.setPower(power);
-//            }
-            motorFrontRight.setPower(-power);
-            motorBackRight.setPower(-power);
-            motorBackLeft.setPower(power);
-            motorFrontLeft.setPower(power);
+            //setting the motor powers
+            motorFrontRight.setPower(-speed*power);
+            motorBackRight.setPower(-speed*power);
+            motorBackLeft.setPower(speed*power);
+            motorFrontLeft.setPower(speed*power);
 
             //Difference between the target and current position relative to the initial value
             err = error;
@@ -604,36 +550,6 @@ public class CraterFacingAuto extends LinearOpMode {
 
         hangingMotor.setMode(RunMode.RUN_USING_ENCODER);
 
-
-    }
-    public void badturn(double angle, double speed){
-
-        motorFrontRight.setMode(RunMode.RUN_USING_ENCODER);
-        motorFrontLeft.setMode(RunMode.RUN_USING_ENCODER);
-        motorBackLeft.setMode(RunMode.RUN_USING_ENCODER);
-        motorBackRight.setMode(RunMode.RUN_USING_ENCODER);
-
-        motorFrontRight.setPower(-speed);
-        motorBackRight.setPower(-speed);
-        motorBackLeft.setPower(speed);
-        motorFrontLeft.setPower(speed);
-        Orientation angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        if(speed>0){
-            while(angle - angles.firstAngle > 0){
-                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            }
-        }
-        else{
-            while(angle - angles.firstAngle < 0){
-                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            }
-
-        }
-
-        motorFrontRight.setPower(0);
-        motorBackRight.setPower(0);
-        motorBackLeft.setPower(0);
-        motorFrontLeft.setPower(0);
 
     }
 }
