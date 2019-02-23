@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.OldPrograms;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -13,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Created by sharma on 10/14/18.
  */
 @TeleOp
+@Disabled
 public class RobotReset extends LinearOpMode {
     //boom-ting
 

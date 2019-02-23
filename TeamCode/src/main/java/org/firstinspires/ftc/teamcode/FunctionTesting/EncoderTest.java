@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -13,7 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Created by Shreyas on 10/27/17.
  */
 @Autonomous
-//@Disabled
+@Disabled
 public class EncoderTest extends LinearOpMode{
 
     DcMotor motorFrontRight;

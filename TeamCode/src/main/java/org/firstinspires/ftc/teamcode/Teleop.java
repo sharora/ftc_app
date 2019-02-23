@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
+import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -50,11 +51,13 @@ public class Teleop extends LinearOpMode {
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
         verticalLift.setDirection(Direction.REVERSE);
         verticalLift.setMode(RunMode.RUN_TO_POSITION);
+        hangingMotor.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
 
-        intakeDump = hardwareMap.dcMotor.get("intakeDump");
+
 
         mgLimVert = hardwareMap.digitalChannel.get("mgLimVert");
 
+        intakeDump = hardwareMap.dcMotor.get("intakeDump");
         intakeDump.setMode(RunMode.RUN_TO_POSITION);
         intakeSlides = hardwareMap.dcMotor.get("intakeSlides");
 
@@ -82,15 +85,12 @@ public class Teleop extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            if(gamepad1.right_bumper){
-                spinner.setPower(1);
-            }
-            else if(gamepad1.left_bumper){
-                spinner.setPower(-1);
-            }
-            else{
-                spinner.setPower(0);
-            }
+//            if(gamepad1.right_bumper){
+//                spinner.setPower(1);
+//            }
+//            else if(gamepad1.left_bumper){
+//                spinner.setPower(-1);
+//            }
 
             if(gamepad2.dpad_up){
                 hangingMotor.setPower(1);
@@ -109,17 +109,24 @@ public class Teleop extends LinearOpMode {
             if(gamepad2.right_trigger>0){
                 intakeDump.setPower(0.4);
                 intakeDump.setTargetPosition(-1500);
+                spinner.setPower(-1);
             }
             //sends the mechanism to the top position when left bumper is pressed
             else if(gamepad2.left_trigger>0){
                 intakeDump.setPower(0.6);
                 intakeDump.setTargetPosition(0);
+                spinner.setPower(-1);
+            }
+            else if(gamepad2.a){
+                spinner.setPower(1);
             }
             //if no buttons are pressed than the mechanism is sent to neutral position
             else{
                 intakeDump.setPower(0.4);
                 intakeDump.setTargetPosition(-650);
+                spinner.setPower(0);
             }
+
 
 
 //            if(dumpPos == 0 && intakeContinue){
@@ -250,19 +257,32 @@ public class Teleop extends LinearOpMode {
 //
 //
 //            }
-            if(gamepad2.x){
-                verticalLift.setTargetPosition(-1950);
+            if(gamepad1.b){
+                verticalLift.setTargetPosition(-1930);
                 verticalLift.setPower(1);
-                if(verticalLift.getCurrentPosition()<-800){
-                    dumper2.setPosition(0.78);
-                    dumper1.setPosition(-0.78);
-                }else{
-                    dumper2.setPosition(-1);
-                    dumper1.setPosition(1);
-
+                if(verticalLift.getCurrentPosition()<-50){
+//                    if(dumper2.getPosition()>0.4 && dumper2.getPosition()<0.84){
+//                        dumper2.setPosition(dumper2.getPosition()+0.013);
+//                        dumper1.setPosition(dumper1.getPosition()-0.013);
+//                    }
+//                    //if the dumper is in the first stage of rotation set a higher speed
+//                    else if(dumper2.getPosition()<0.84){
+//                        dumper2.setPosition(dumper2.getPosition() + 0.1);
+//                        dumper1.setPosition(dumper1.getPosition() + 0.1);
+//                    }
+                    dumper2.setPosition(dumper2.getPosition() + 0.08*(0.80-dumper2.getPosition()));
+                    dumper1.setPosition(-(dumper1.getPosition() + 0.08*(0.80-dumper1.getPosition())));
                 }
+//                else{
+//                    dumper2.setPosition(dumper2.getPosition() + 0.002*(-1-dumper2.getPosition()));
+//                    dumper1.setPosition(-(dumper1.getPosition() + 0.002*(-1-dumper1.getPosition())));
+//
+//                }
 
 
+            }else if(gamepad1.x){
+                dumper2.setPosition(0.4);
+                dumper1.setPosition(-0.4);
             }
             else if(gamepad2.y){
                 verticalLift.setTargetPosition(-1620);
@@ -275,12 +295,19 @@ public class Teleop extends LinearOpMode {
                 verticalLift.setPower(0.2);
 
             }
+//            else if(mgLimVert.getState()){
+//                verticalLift.setPower(0);
+//                dumper2.setPosition(dumper2.getPosition() + 0.6*(-1-dumper2.getPosition()));
+//                dumper1.setPosition(-(dumper1.getPosition() + 0.6*(-1-dumper1.getPosition())));
+//
+//            }
             else{
                 verticalLift.setPower(0);
                 dumper2.setPosition(-1);
                 dumper1.setPosition(1);
 
             }
+
 
             if(gamepad2.right_stick_y!=0){
                 intakeSlides.setMode(RunMode.RUN_USING_ENCODER);
@@ -311,10 +338,53 @@ public class Teleop extends LinearOpMode {
             telemetry.update();
 
 
-            motorFrontRight.setPower(0.83*gamepad1.right_stick_y);
-            motorFrontLeft.setPower(0.83*gamepad1.left_stick_y);
-            motorBackRight.setPower(0.83*gamepad1.right_stick_y);
-            motorBackLeft.setPower(0.83*gamepad1.left_stick_y);
+            motorFrontRight.setPower(-0.65*gamepad1.right_stick_y);
+            motorFrontLeft.setPower(-0.65*gamepad1.left_stick_y);
+            motorBackRight.setPower(-0.65*gamepad1.right_stick_y);
+            motorBackLeft.setPower(-0.65*gamepad1.left_stick_y);
+//            double x = -gamepad1.right_stick_x;
+//            double forward = gamepad1.left_trigger*0.75;
+//            double backward = gamepad1.right_trigger*0.75;
+//            if(gamepad1.right_trigger== 0 && gamepad1.left_trigger ==0){
+//
+//                motorFrontRight.setPower(0.6*x);
+//                motorBackRight.setPower(0.6*x);
+//                motorBackLeft.setPower(0.6*-x);
+//                motorFrontLeft.setPower(0.6*-x);
+//
+//            }
+//            else if(forward != 0){
+//                if (x>=0){
+//                    motorFrontRight.setPower(forward);
+//                    motorBackRight.setPower(forward);
+//                    motorFrontLeft.setPower(forward*(1-x));
+//                    motorBackLeft.setPower(forward*(1-x));
+//
+//                }
+//                else{
+//                    motorFrontLeft.setPower(forward);
+//                    motorBackLeft.setPower(forward);
+//                    motorFrontRight.setPower(forward*(1+x));
+//                    motorBackRight.setPower(forward*(1+x));
+//                }
+//
+//            }
+//            else{
+//                if (x>=0){
+//                    motorFrontRight.setPower(-backward);
+//                    motorBackRight.setPower(-backward);
+//                    motorBackLeft.setPower(-backward*(1-x));
+//                    motorFrontLeft.setPower(-backward*(1-x));
+//
+//                }
+//                else{
+//                    motorFrontLeft.setPower(-backward);
+//                    motorBackLeft.setPower(-backward);
+//                    motorFrontRight.setPower(-backward*(1+x));
+//                    motorBackRight.setPower(-backward*(1+x));
+//                }
+//
+//            }
 
 
         }
