@@ -15,26 +15,30 @@ public class Outake {
     private DcMotor verticalLift;
 
     private LinearOpMode opMode;
+    private Servo hangLock;
 
-    //servo depositers
-    Servo dumper1;
-    Servo dumper2;
+    //servo depositer
+    private Servo dumper1;
+
 
     //limit switch that indicates base position
-    DigitalChannel mgLimVert;
+    private DigitalChannel mgLimVert;
 
     public Outake(HardwareMap hardwareMap, LinearOpMode opMode){
 
         this.opMode = opMode;
 
         hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
+        hangingMotor.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
 
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
         verticalLift.setDirection(Direction.REVERSE);
         verticalLift.setMode(RunMode.RUN_TO_POSITION);
 
+        hangLock = hardwareMap.servo.get("hangLock");
+
         dumper1 = hardwareMap.servo.get("dumper1");
-        dumper2 = hardwareMap.servo.get("dumper2");
+
 
         mgLimVert = hardwareMap.digitalChannel.get("mgLimVert");
 
@@ -42,6 +46,7 @@ public class Outake {
     }
     public void setHangPower(double power){
         if(power == 0){
+            hangingMotor.setPower(0);
             hangingMotor.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
         }
         else{
@@ -49,45 +54,126 @@ public class Outake {
         }
 
     }
-    public void unHangInAuto(){
-        verticalLift.setMode(RunMode.STOP_AND_RESET_ENCODER);
-        hangingMotor.setMode(RunMode.STOP_AND_RESET_ENCODER);
+    public void setHangLock(double position){
+        hangLock.setPosition(position);
+    }
+    public void setUpSlidePower(double power){
+        verticalLift.setMode(RunMode.RUN_USING_ENCODER);
+        verticalLift.setPower(power);
+    }
+    public void setUpSlidePosition(int position, double power){
+        verticalLift.setMode(RunMode.RUN_TO_POSITION);
+        verticalLift.setTargetPosition(position);
+        verticalLift.setPower(power);
+    }
+    public int upSlidePosition(){
+        return verticalLift.getCurrentPosition();
+    }
+    public boolean upSlideisBusy(){
+        return verticalLift.isBusy();
+    }
 
-        verticalLift.setTargetPosition(-15200/8);
-        hangingMotor.setTargetPosition(15200 + 1200);
+    public void unHanginAutoV2(){
+        hangLock.setPosition(0);
+        hangingMotor.setZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
+        dumper1.setPosition(0.1);
 
+        verticalLift.setTargetPosition(-600);
 
         verticalLift.setMode(RunMode.RUN_TO_POSITION);
-        hangingMotor.setMode(RunMode.RUN_TO_POSITION);
 
-        hangingMotor.setPower(1.0);
+        verticalLift.setPower(-0.5);
+
+
+
+        while (verticalLift.isBusy() && opMode.opModeIsActive()) {
+            opMode.telemetry.addData("hang pos1", hangingMotor.getCurrentPosition());
+            opMode.telemetry.addData("vert pos1", verticalLift.getCurrentPosition());
+            opMode.telemetry.update();
+        }
+        hangingMotor.setMode(RunMode.RUN_USING_ENCODER);
+        verticalLift.setTargetPosition(-1150);
+
         verticalLift.setPower(-0.125);
+        hangingMotor.setPower(1.0);
 
-
-
-        while (hangingMotor.isBusy() || verticalLift.isBusy() && opMode.opModeIsActive()) {
-
-
+        while (hangingMotor.getCurrentPosition()<9400 && verticalLift.isBusy() && opMode.opModeIsActive()) {
+            opMode.telemetry.addData("hang pos2", hangingMotor.getCurrentPosition());
+            opMode.telemetry.addData("vert pos2", verticalLift.getCurrentPosition());
+            opMode.telemetry.update();
         }
 
+        hangingMotor.setMode(RunMode.RUN_USING_ENCODER);
         hangingMotor.setPower(0);
 
+    }
+    public void unHangInAuto(){
+        hangingMotor.setMode(RunMode.RUN_TO_POSITION);
+        hangingMotor.setTargetPosition(50);
+        hangingMotor.setPower(1);
+        while(hangingMotor.isBusy()){
+
+        }
+        hangingMotor.setPower(0);
+        hangingMotor.setMode(RunMode.RUN_WITHOUT_ENCODER);
+
+        hangLock.setPosition(0);
+        hangingMotor.setZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
+
+
+        verticalLift.setTargetPosition(-600);
+
+        verticalLift.setMode(RunMode.RUN_TO_POSITION);
+
+        verticalLift.setPower(-0.5);
+
+
+
+        while (verticalLift.isBusy() && opMode.opModeIsActive()) {
+            opMode.telemetry.addData("hang pos1", hangingMotor.getCurrentPosition());
+            opMode.telemetry.addData("vert pos1", verticalLift.getCurrentPosition());
+            opMode.telemetry.update();
+        }
+        dumper1.setPosition(0.1);
+        hangingMotor.setMode(RunMode.RUN_TO_POSITION);
+
+
+        hangingMotor.setTargetPosition(9400);
+        verticalLift.setTargetPosition(-1150);
+
+        verticalLift.setPower(-0.125);
+        hangingMotor.setPower(1.0);
+
+        while (hangingMotor.isBusy() && verticalLift.isBusy() && opMode.opModeIsActive()) {
+            opMode.telemetry.addData("hang pos", hangingMotor.getCurrentPosition());
+            opMode.telemetry.addData("vert pos", verticalLift.getCurrentPosition());
+            opMode.telemetry.update();
+        }
+
         hangingMotor.setMode(RunMode.RUN_USING_ENCODER);
+        hangingMotor.setPower(0);
 
     }
     public void lowerSlidesAuto(){
-        while(mgLimVert.getState()){
+        while(verticalLift.getCurrentPosition()<-50){
             verticalLift.setPower(0);
         }
         verticalLift.setTargetPosition(0);
-        verticalLift.setPower(0.2);
+        verticalLift.setPower(0.3);
+    }
+    public double getDumperPos(){
+        return dumper1.getPosition();
     }
     public boolean getMgLimState(){
         return mgLimVert.getState();
     }
     public void setDumpPos(double p){
-        dumper1.setPosition(-p);
-        dumper2.setPosition(p);
+        dumper1.setPosition(p);
+    }
+    public void setHangMotorPosition(int n, double p){
+        hangingMotor.setMode(RunMode.RUN_TO_POSITION);
+        hangingMotor.setTargetPosition(n);
+        hangingMotor.setPower(p);
 
     }
     

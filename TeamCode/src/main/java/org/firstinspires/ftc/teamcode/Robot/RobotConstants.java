@@ -14,7 +14,7 @@ public class RobotConstants {
     public static double wheelDistance = 7.9;
     public static int horizontalslidemax = -1350;
 
-    public static double driveSpeedCoefficient = 0.83;
+    public static double driveSpeedCoefficient = -1;
     public static double driveWheelDiameter = 4.00;
     public static double driveEncoderTicksPerRev = 536.7;
 

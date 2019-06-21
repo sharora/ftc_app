@@ -21,12 +21,30 @@ public class DrivetrainTest extends LinearOpMode {
 
         waitForStart();
 
+//        while(opModeIsActive()){
+//            telemetry.addData("angle",dt.getAngle());
+//            telemetry.update();
+//        }
+
+
+
+
 //        dt.RuntoPositionTrapezoidal(20,40, 20);
         //negative angle is clockwise
 //        SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, ayganggang);
 //        sleep(30000);
-        dt.TurntoAngleTrapezoidalGyroCorrection(Math.PI/2, 40, 30);
 //        dt.RuntoPositionTrapezoidal(20,40,20);
+//        dt.TurntoAngleTrapezoidalGyroCorrection(Math.PI/4,40,20);
+//        sleep(2000);
+//                                                                                                                                                                      ZAQ
+//        dt.TurntoAngleTrapezoidalGyroCorrection(Math.PI/2,40,20);
+        dt.RuntoPositionTrapezoidalFirstHalf(-15,-40,-20);
+        dt.ArctoAngleSecondHalf(-Math.PI/4,10);
+        dt.RunAtConstantVelocity(-30);
+        dt.RuntoPositionTrapezoidalSecondHalf(-15);
+
+
+//        dt.RuntoPositionTrapezoidal(40,40,20);
 
 
 

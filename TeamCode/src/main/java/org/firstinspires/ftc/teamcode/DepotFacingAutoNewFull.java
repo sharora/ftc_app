@@ -17,7 +17,7 @@ import java.util.List;
 
 @Autonomous
 @Disabled
-public class CrateFacingAutoNewFull extends LinearOpMode {
+public class DepotFacingAutoNewFull extends LinearOpMode {
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -89,14 +89,22 @@ public class CrateFacingAutoNewFull extends LinearOpMode {
         robot.outake.unHangInAuto();
 
         //go forward
-        robot.dt.RuntoPositionTrapezoidal(14.5,40,20);
+        robot.dt.RuntoPositionTrapezoidal(13.5,40,20);
         sleep(200);
 
         //bring down slides
         robot.outake.lowerSlidesAuto();
 
         //retract intake slides
-        robot.intake.setIntakeSlidePosition(0, 0.5);
+        robot.intake.setIntakeSlidePosition(-2000, 0.5);
+//        robot.intake.setIntakeDumpPosition(-1500,0.5);
+//        sleep(1000);
+//        robot.intake.setSpinnerPower(1);
+//        sleep(200);
+//        robot.intake.setSpinnerPower(0);
+//        robot.intake.setIntakeSlidePosition(0,1);
+//        robot.intake.setIntakeDumpPosition(0,0.5);
+//        sleep(1000);
 
 
         //turn to get in position for scanning samples
@@ -107,16 +115,11 @@ public class CrateFacingAutoNewFull extends LinearOpMode {
         int silv2pos = 0;
         time.reset();
 
-        boolean sampled = false;
-
         while (opModeIsActive()) {
                         if(time.milliseconds()>500){
                             //gold is far right
                             telemetry.addLine("Not sure where gold is so guessing");
-                            robot.setTeamMarkerServo(0.7);
-                            robot.dt.RuntoPositionTrapezoidal(-37,-40,-35);
-                            robot.setTeamMarkerServo(0);
-                            sampled = true;
+                            knockGoldLeft();
 
                             break;
                         }
@@ -130,11 +133,10 @@ public class CrateFacingAutoNewFull extends LinearOpMode {
                                     if(updatedRecognitions.get(0).getLabel().equals(LABEL_SILVER_MINERAL) &&
                                             updatedRecognitions.get(1).getLabel().equals(LABEL_SILVER_MINERAL)){
                                         //gold is far left(robot perspective)
-                                        telemetry.addLine("Gold is at Left after scanning once");
+                                        telemetry.addLine("Gold is at Left");
                                         robot.setTeamMarkerServo(0.7);
                                         robot.dt.RuntoPositionTrapezoidal(-37,-40,-35);
                                         robot.setTeamMarkerServo(0);
-                                        sampled = true;
 
                                         break;
 
@@ -149,23 +151,22 @@ public class CrateFacingAutoNewFull extends LinearOpMode {
                                     }
                                     if(silv1pos>goldpos){
                                         //gold is in middle
-                                        telemetry.addLine("Gold is at Center after scanning once");
+                                        telemetry.addLine("Gold is at Center");
                                         robot.setTeamMarkerServo(0.7);
                                         robot.dt.RuntoPositionTrapezoidal(8,40,20);
                                         robot.setTeamMarkerServo(0);
                                         robot.dt.RuntoPositionTrapezoidal(-45,-40,-35);
-                                        sampled = true;
+
                                         break;
                                     }
                                     else{
                                         //gold is at far right
-                                        telemetry.addLine("Gold is at Right after scanning once");
+                                        telemetry.addLine("Gold is at Right");
                                         robot.dt.RuntoPositionTrapezoidal(14,40,20);
                                         robot.setTeamMarkerServo(0.7);
                                         robot.dt.RuntoPositionTrapezoidal(9,40,20);
                                         robot.setTeamMarkerServo(0);
                                         robot.dt.RuntoPositionTrapezoidal(-60,-40,-35);
-                                        sampled = true;
                                         break;
                                     }
 
@@ -177,24 +178,22 @@ public class CrateFacingAutoNewFull extends LinearOpMode {
                                         if(updatedRecognitions.get(0).getLeft()>550){
                                             //gold is far right
                                             //knock right
-                                            telemetry.addLine("Gold is at Right after scanning only right");
+                                            telemetry.addLine("Gold is at Right");
                                             robot.dt.RuntoPositionTrapezoidal(14,40,20);
                                             robot.setTeamMarkerServo(0.7);
                                             robot.dt.RuntoPositionTrapezoidal(9,40,20);
                                             robot.setTeamMarkerServo(0);
                                             robot.dt.RuntoPositionTrapezoidal(-60,-40,-35);
-                                            sampled = true;
                                             break;
 
                                         }else{
                                             //gold is center
-                                            telemetry.addLine("Gold is at Center after scanning only center");
+                                            telemetry.addLine("Gold is at Center");
                                             robot.setTeamMarkerServo(0.7);
                                             robot.dt.RuntoPositionTrapezoidal(8,40,20);
                                             robot.setTeamMarkerServo(0);
                                             robot.dt.RuntoPositionTrapezoidal(-41,-40,-35);
                                             //knock center
-                                            sampled = true;
                                             break;
                                         }
 
@@ -207,12 +206,7 @@ public class CrateFacingAutoNewFull extends LinearOpMode {
                                             while (opModeIsActive()) {
                                                 if(time.milliseconds()>1000){
                                                     telemetry.addLine("Guessing");
-                                                    robot.dt.RuntoPositionTrapezoidal(14,40,20);
-                                                    robot.setTeamMarkerServo(0.7);
-                                                    robot.dt.RuntoPositionTrapezoidal(9,40,20);
-                                                    robot.setTeamMarkerServo(0);
-                                                    robot.dt.RuntoPositionTrapezoidal(-60,-40,-35);
-                                                    sampled = true;
+                                                    knockGoldRight();
                                                     break;
                                                 }
                                                 else if (tfod != null) {
@@ -224,23 +218,21 @@ public class CrateFacingAutoNewFull extends LinearOpMode {
                                                         if(updatedRecognitions.size() == 1){
                                                             if(updatedRecognitions.get(0).getLabel().equals(LABEL_SILVER_MINERAL)){
                                                                 //knock left
-                                                                telemetry.addLine("Gold is at Left after scanning twice");
+                                                                telemetry.addLine("Gold is at Left");
                                                                 robot.dt.RuntoPositionTrapezoidal(-6,-40,-20);
                                                                 robot.setTeamMarkerServo(0.7);
                                                                 robot.dt.RuntoPositionTrapezoidal(-37,-40,-35);
                                                                 robot.setTeamMarkerServo(0);
-                                                                sampled = true;
                                                                 break;
                                                             }
                                                             else{
                                                                 //knock right
-                                                                telemetry.addLine("Gold is at Right after scanning twice");
+                                                                telemetry.addLine("Gold is at Right");
                                                                 robot.dt.RuntoPositionTrapezoidal(8,40,20);
                                                                 robot.setTeamMarkerServo(0.7);
                                                                 robot.dt.RuntoPositionTrapezoidal(9,40,20);
                                                                 robot.setTeamMarkerServo(0);
                                                                 robot.dt.RuntoPositionTrapezoidal(-60,-40,-35);
-                                                                sampled = true;
                                                                 break;
                                                             }
                                                         }
@@ -257,33 +249,10 @@ public class CrateFacingAutoNewFull extends LinearOpMode {
                 }
             }
         }
-
-        if(!sampled){
-            telemetry.addLine("Not sure where gold is so guessing");
-            robot.setTeamMarkerServo(0.7);
-            robot.dt.RuntoPositionTrapezoidal(-37,-40,-35);
-            robot.setTeamMarkerServo(0);
-            sampled = true;
-
-        }
         telemetry.update();
-//        robot.dt.TurntoAngleTrapezoidalGyroCorrection(-2.27,-40,-20);
-//        robot.intake.setIntakeSlidePosition(-2200,1);
-//        robot.intake.setIntakeDumpPosition(-1500,0.5);
-//        robot.intake.setSpinnerPower(-1);
-//        robot.dt.RuntoPositionTrapezoidal(10,40,20);
-//        robot.intake.setSpinnerPower(1);
-//        sleep(200);
-//        robot.intake.setSpinnerPower(0);
-//        robot.intake.setIntakeSlidePosition(0,1);
-//        robot.intake.setIntakeDumpPosition(0,0.5);
-//        robot.dt.RuntoPositionTrapezoidal(-6,-40,-20);
-//        sleep(200);
-//        robot.dt.TurntoAngleTrapezoidalGyroCorrection(-0.65,-40,-20);
-//        robot.dt.RuntoPositionTrapezoidal(-35,-40,-35);
-//        robot.intake.setIntakeSlidePosition(-2000,0.6);
-//        robot.dt.TurntoAngleTrapezoidalGyroCorrection(-Math.PI/2,-40,-15);
-//        sleep(1000);
+        robot.dt.TurntoAngleTrapezoidalGyroCorrection(-2.27,-40,-20);
+        robot.intake.setIntakeSlidePosition(-2200,1);
+        sleep(1000);
 
 
 
@@ -317,4 +286,13 @@ public class CrateFacingAutoNewFull extends LinearOpMode {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
     }
 
+    public void knockGoldRight(){
+
+    }
+    public void knockGoldCenter(){
+
+    }
+    public void knockGoldLeft(){
+
+    }
 }
